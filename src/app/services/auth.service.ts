@@ -62,6 +62,11 @@ export class AuthService {
   private guardarToken(idToken: string) {
     this.userToke = idToken;
     localStorage.setItem('token', idToken);
+
+    let hoy = new Date();
+    hoy.setSeconds(3600);
+
+    localStorage.setItem('expired', hoy.getTime().toString());
   }
 
   leerToken() {
@@ -75,6 +80,18 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.userToke.length > 2;
+    if (this.userToke.length < 2) {
+      return false;
+    }
+
+    const expira = Number(localStorage.getItem('expired'));
+    const expiraDate = new Date();
+    expiraDate.setTime(expira);
+
+    if (expiraDate > new Date()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
